@@ -1,0 +1,421 @@
+{
+  "$id": "https://darkmentor.com/BTIDES_Schema/BTIDES_SMP.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "description": "BTIDES SMP packet information data types",
+  "type": "object",
+  "properties": {
+    "SMPArray": {
+      "type": "array",
+      "items": {
+        "anyOf": [
+          {
+            "$ref": "#/definitions/0x01_SMP_Pairing_Request"
+          },
+          {
+            "$ref": "#/definitions/0x02_SMP_Pairing_Response"
+          },
+          {
+            "$ref": "#/definitions/0x03_SMP_Pairing_Confirm"
+          },
+          {
+            "$ref": "#/definitions/0x04_SMP_Pairing_Random"
+          },
+          {
+            "$ref": "#/definitions/0x05_SMP_Pairing_Failed"
+          },
+          {
+            "$ref": "#/definitions/0x0B_SMP_Security_Request"
+          },
+          {
+            "$ref": "#/definitions/0x0C_SMP_Pairing_Public_Key"
+          },
+          {
+            "$ref": "#/definitions/0x0D_SMP_Pairing_DHKey_Check"
+          },
+          {
+            "$ref": "#/definitions/0x0E_SMP_Pairing_Keypress_Notification"
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "io_cap": {
+      "description": "IO Capabilities. Used for determining pairing method (i.e. Just Works vs. Passkey Entry vs. Numeric Comparison). \n 0x00 = DisplayOnly\n 0x01 = DisplayYesNo\n 0x02 = KeyboardOnly\n 0x03 = NoInputNoOutput\n 0x04= KeyboardDisplay\n Other values RFU",
+      "type": "integer",
+      "enum": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ]
+    },
+    "oob_data": {
+      "description": "The \"Out of band (OOB) data flag\" field from the spec.\n 0x00 = \"OOB Authentication data not present\"\n 0x01 = \"OOB Authentication data from remote device present\"",
+      "type": "integer",
+      "enum": [
+        0,
+        1
+      ]
+    },
+    "auth_req": {
+      "description": "The \"AuthReq\" field from the spec. This has numerous bit-field sub-fields such as Bonding, MITM, Secure Connections, etc",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "max_key_size": {
+      "description": "The \"Maximum Encryption Key Size\" field from the spec. To be *valid* this should technically always be > 7 and <= 16, but someone could be sending invalid data that you want to capture accurately, so just use whatever value was in the packet.",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 255
+    },
+    "0x01_SMP_Pairing_Request": {
+      "type": "object",
+      "description": "Structure for SMP Pairing Request packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "io_cap",
+        "oob_data",
+        "auth_req",
+        "max_key_size",
+        "initiator_key_dist",
+        "responder_key_dist"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Pairing Request"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 1.",
+          "const": 1
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "io_cap": {
+          "$ref": "#/definitions/io_cap"
+        },
+        "oob_data": {
+          "$ref": "#/definitions/oob_data"
+        },
+        "auth_req": {
+          "$ref": "#/definitions/auth_req"
+        },
+        "max_key_size": {
+          "$ref": "#/definitions/max_key_size"
+        },
+        "initiator_key_dist": {
+          "description": "The \"Initiator Key Distribution\" field from the spec. An indication of which keys will be distributed by the initiator during Transport-Specific Key Distribution phase of pairing. \n bit 0 = EncKey\n bit 1 = IdKey\n bit 2 = SignKey\n bit 3 = LinkKey\n other bits RFU.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "responder_key_dist": {
+          "description": "The \"Responder Key Distribution\" field from the spec. An indication of which keys are requested by the initiator to be distributed by the responder during Transport-Specific Key Distribution phase of pairing. \n bit 0 = EncKey\n bit 1 = IdKey\n bit 2 = SignKey\n bit 3 = LinkKey\n other bits RFU.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      }
+    },
+    "0x02_SMP_Pairing_Response": {
+      "type": "object",
+      "description": "Structure for SMP Pairing Response packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "io_cap",
+        "oob_data",
+        "auth_req",
+        "max_key_size",
+        "initiator_key_dist",
+        "responder_key_dist"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Pairing Response"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 2.",
+          "const": 2
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "io_cap": {
+          "$ref": "#/definitions/io_cap"
+        },
+        "oob_data": {
+          "$ref": "#/definitions/oob_data"
+        },
+        "auth_req": {
+          "$ref": "#/definitions/auth_req"
+        },
+        "max_key_size": {
+          "$ref": "#/definitions/max_key_size"
+        },
+        "initiator_key_dist": {
+          "description": "The \"Initiator Key Distribution\" field from the spec. An indication of which keys are requested by the responder to be distributed by the initiator during Transport-Specific Key Distribution phase of pairing. \n bit 0 = EncKey\n bit 1 = IdKey\n bit 2 = SignKey\n bit 3 = LinkKey\n other bits RFU.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        },
+        "responder_key_dist": {
+          "description": "The \"Responder Key Distribution\" field from the spec. An indication of which keys will be distributed by the responder during Transport-Specific Key Distribution phase of pairing. \n bit 0 = EncKey\n bit 1 = IdKey\n bit 2 = SignKey\n bit 3 = LinkKey\n other bits RFU.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      }
+    },
+    "0x03_SMP_Pairing_Confirm": {
+      "type": "object",
+      "description": "Structure for SMP Pairing Confirm packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "value_hex_str"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Pairing Confirm"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 3.",
+          "const": 3
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "value_hex_str": {
+          "description": "This is the packet-byte-ordered value of the 16 bytes that were sent for the Pairing Confirm value, as a hex string.",
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 32
+        }
+      }
+    },
+    "0x04_SMP_Pairing_Random": {
+      "type": "object",
+      "description": "Structure for SMP Pairing Random packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "value_hex_str"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Pairing Random"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 4.",
+          "const": 4
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "value_hex_str": {
+          "description": "This is the packet-byte-ordered value of the 16 bytes that were sent for the Pairing Random value, as a hex string.",
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 32
+        }
+      }
+    },
+    "0x05_SMP_Pairing_Failed": {
+      "type": "object",
+      "description": "Structure for SMP Pairing Failed packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "reason"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "reason_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Pairing Failed"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 5.",
+          "const": 5
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "reason": {
+          "description": "The error code specifying the reason why pairing failed.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      }
+    },
+    "0x0B_SMP_Security_Request": {
+      "type": "object",
+      "description": "Structure for SMP Security Request packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "auth_req"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Security Request"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 11.",
+          "const": 11
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "auth_req": {
+          "$ref": "#/definitions/auth_req"
+        }
+      }
+    },
+    "0x0C_SMP_Pairing_Public_Key": {
+      "type": "object",
+      "description": "Structure for SMP Pairing Public Key packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "pub_key_x_hex_str",
+        "pub_key_y_hex_str"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Pairing Public Key"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 12.",
+          "const": 12
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "pub_key_x_hex_str": {
+          "description": "This is the little-endian 32 bytes that were sent for the Pairing Public Key X value, as a hex string.",
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64
+        },
+        "pub_key_y_hex_str": {
+          "description": "This is the little-endian 32 bytes that were sent for the Pairing Public Key Y value, as a hex string.",
+          "type": "string",
+          "minLength": 64,
+          "maxLength": 64
+        }
+      }
+    },
+    "0x0D_SMP_Pairing_DHKey_Check": {
+      "type": "object",
+      "description": "Structure for SMP Pairing DHKey Check packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "value_hex_str"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Pairing DHKey Check"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 13.",
+          "const": 13
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "value_hex_str": {
+          "description": "This is the little-endian 16 bytes that were sent for the DHKey Check (E) value, as a hex string.",
+          "type": "string",
+          "minLength": 32,
+          "maxLength": 32
+        }
+      }
+    },
+    "0x0E_SMP_Pairing_Keypress_Notification": {
+      "type": "object",
+      "description": "Structure for SMP Pairing Keypress Notification packet.",
+      "required": [
+        "opcode",
+        "direction",
+        "notification_type"
+      ],
+      "properties": {
+        "std_optional_fields": {
+          "$ref": "BTIDES_base.json#/definitions/std_optional_fields"
+        },
+        "notification_type_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string"
+        },
+        "opcode_str": {
+          "description": "This optional field is just for if you don't care about json file size and you want more human-readable JSON output.",
+          "type": "string",
+          "const": "Pairing Keypress Notification"
+        },
+        "opcode": {
+          "description": "The SMP opcode for this packet type. Must always be 14.",
+          "const": 14
+        },
+        "direction": {
+          "$ref": "BTIDES_base.json#/definitions/direction"
+        },
+        "notification_type": {
+          "description": "The keypress notification type.",
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 255
+        }
+      }
+    }
+  }
+}

@@ -94,6 +94,21 @@ async def do_drop(usb_transport):
 
 
 # -----------------------------------------------------------------------------
+async def do_xeno_vsc(usb_transport, payload=b'\x27\x00\xff\xff\xff\xff\xff\xff\xff\xff'):
+    async with await transport.open_transport(usb_transport) as (
+        hci_source,
+        hci_sink,
+    ):
+        # Create a host to communicate with the device
+        host = Host(hci_source, hci_sink)
+        await host.reset(driver_factory=None)
+
+        # Tell the device to reset/drop any loaded patch
+        await rtk.Driver.local_send_xeno_VSC(host, payload)
+        print("Xeno VSC sent & received")
+
+
+# -----------------------------------------------------------------------------
 async def do_info(usb_transport, force):
     async with await transport.open_transport(usb_transport) as (
         hci_source,

@@ -179,7 +179,14 @@ RTK_USB_PRODUCTS = {
 HCI_RTK_READ_ROM_VERSION_COMMAND = hci.hci_vendor_command_op_code(0x6D)
 HCI_RTK_DOWNLOAD_COMMAND = hci.hci_vendor_command_op_code(0x20)
 HCI_RTK_DROP_FIRMWARE_COMMAND = hci.hci_vendor_command_op_code(0x66)
+HCI_RTK_XENO_CUSTOM_COMMAND = hci.hci_vendor_command_op_code(0x222)
 hci.HCI_Command.register_commands(globals())
+
+
+@hci.HCI_Command.command
+@dataclass
+class HCI_RTK_Xeno_Custom_Command(hci.HCI_Command):
+    payload: bytes = field(metadata=hci.metadata(lambda self: len(self.payload)))
 
 
 @hci.HCI_Command.command
@@ -489,6 +496,16 @@ class Driver(common.Driver):
             return False
 
         return True
+
+    @staticmethod
+    async def local_send_xeno_VSC(host, payload=b'\xd0\x0d\xd0\x0d\xd0\x0d\xd0\x0d'):
+        l = len(payload)
+        response = await host.send_command(HCI_RTK_Xeno_Custom_Command(payload=payload))
+
+        # print(f"status = {response.status}")
+        # print(f"num_hci_command_packets = {response.num_hci_command_packets}")
+        # print(f"command_opcode = {response.command_opcode}")
+        # print(f"Spec-violating extra data: {response.parameters[4:12]}")
 
     @staticmethod
     async def get_loaded_firmware_version(host):
